@@ -1,0 +1,46 @@
+header {
+  color: gainsboro;
+  display: inline-block;
+  position: sticky;
+  background-color: darkslategray;
+  margin: 0;
+  width: 100%;
+  font-family: monospace;
+}
+header ul {
+  list-style: none;
+  display: inline-block;
+  margin: 5px;
+}
+header ul li {
+  display: inline-block;
+  background-color: white;
+  margin: 25px;
+}
+body {
+  height: 900px;
+  margin: 0;
+  background-color: dimgray;
+  font-family: "Courier New", Courier, monospace;
+}
+
+main {
+  display: block;
+  margin: 0;
+}
+section {
+  margin-top: 0;
+  float: right;
+}
+a {
+  position: absolute;
+}
+.side-bar {
+  float: left;
+  display: block;
+}
+img {
+  display: inline block;
+  margin: 5px;
+  margin-top: 10px;
+}
