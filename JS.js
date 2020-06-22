@@ -8,6 +8,10 @@ var currentMiddleImg;
 var currentRightImg;
 var rounds = 25;
 
+var previousLeftIndex;
+var previousMiddleIndex;
+var previousRightIndex;
+
 var leftImg = document.getElementById("left_img");
 var middleImg = document.getElementById("middle_img");
 var rightImg = document.getElementById("right_img");
@@ -44,18 +48,24 @@ new ProductPicture("wine-glass", "img/wine-glass.jpg");
 console.log(allProducts);
 
 function displayRandomImgs() {
-  var leftIndex = generateRandomNumber();
-  var middleIndex = generateRandomNumber();
-  var rightIndex = generateRandomNumber();
-
-  while (
-    middleIndex === rightIndex ||
-    middleIndex === leftIndex ||
-    leftIndex === rightIndex
-  ) {
-    rightIndex = generateRandomNumber();
-    leftIndex = generateRandomNumber();
+  if (totalClicks > 0) {
+    var forbiddenIndex = [
+      previousLeftIndex,
+      previousMiddleIndex,
+      previousRightIndex,
+    ];
   }
+
+  var leftIndex = generateRandomNumber(forbiddenIndex);
+  forbiddenIndex.push(leftIndex);
+
+  var middleIndex = generateRandomNumber(forbiddenIndex);
+  forbiddenIndex.push(middleIndex);
+  var rightIndex = generateRandomNumber(forbiddenIndex);
+
+  previousLeftIndex = leftIndex;
+  previousMiddleIndex = middleIndex;
+  previousRightIndex = rightIndex;
 
   currentLeftImg = allProducts[leftIndex];
   currentMiddleImg = allProducts[middleIndex];
@@ -70,8 +80,20 @@ function displayRandomImgs() {
   allProducts[rightIndex].timesShown += 1;
 }
 
-function generateRandomNumber() {
-  return Math.floor(Math.random() * allProducts.length);
+function generateRandomNumber(forbiddenIndex) {
+  var allowed = true;
+  var randomNumber;
+
+  do {
+    randomNumber = Math.floor(Math.random() * allProducts.length);
+    for (var i = 0; i < forbiddenIndex.length; i++) {
+      if (forbiddenIndex[i] == randomNumber) {
+        allowed = false;
+      }
+    }
+  } while (!allowed);
+
+  return randomNumber;
 }
 
 displayRandomImgs();
