@@ -8,9 +8,15 @@ var currentMiddleImg;
 var currentRightImg;
 var rounds = 25;
 
+var previousLeftIndex;
+var previousMiddleIndex;
+var previousRightIndex;
+
 var leftImg = document.getElementById("left_img");
 var middleImg = document.getElementById("middle_img");
 var rightImg = document.getElementById("right_img");
+
+var productsNames = [];
 
 function ProductPicture(name, url) {
   this.name = name;
@@ -18,6 +24,7 @@ function ProductPicture(name, url) {
   this.numberOfClicks = 0;
   this.timesShown = 0;
   allProducts.push(this);
+  productsNames.push(this.name);
 }
 
 new ProductPicture("bag", "img/bag.jpg");
@@ -44,18 +51,26 @@ new ProductPicture("wine-glass", "img/wine-glass.jpg");
 console.log(allProducts);
 
 function displayRandomImgs() {
-  var leftIndex = generateRandomNumber();
-  var middleIndex = generateRandomNumber();
-  var rightIndex = generateRandomNumber();
-
-  while (
-    middleIndex === rightIndex ||
-    middleIndex === leftIndex ||
-    leftIndex === rightIndex
-  ) {
-    rightIndex = generateRandomNumber();
-    leftIndex = generateRandomNumber();
+  var forbiddenIndex = [];
+  if (totalClicks > 0) {
+    forbiddenIndex = [
+      previousLeftIndex,
+      previousMiddleIndex,
+      previousRightIndex,
+    ];
   }
+
+  var leftIndex = generateRandomNumber(forbiddenIndex);
+  forbiddenIndex.push(leftIndex);
+
+  var middleIndex = generateRandomNumber(forbiddenIndex);
+  forbiddenIndex.push(middleIndex);
+
+  var rightIndex = generateRandomNumber(forbiddenIndex);
+
+  previousLeftIndex = leftIndex;
+  previousMiddleIndex = middleIndex;
+  previousRightIndex = rightIndex;
 
   currentLeftImg = allProducts[leftIndex];
   currentMiddleImg = allProducts[middleIndex];
@@ -70,8 +85,21 @@ function displayRandomImgs() {
   allProducts[rightIndex].timesShown += 1;
 }
 
-function generateRandomNumber() {
-  return Math.floor(Math.random() * allProducts.length);
+function generateRandomNumber(forbiddenIndex) {
+  var allowed;
+  var randomNumber;
+
+  do {
+    randomNumber = Math.floor(Math.random() * allProducts.length);
+    allowed = true;
+    for (var i = 0; i < forbiddenIndex.length; i++) {
+      if (forbiddenIndex[i] === randomNumber) {
+        allowed = false;
+      }
+    }
+  } while (!allowed);
+
+  return randomNumber;
 }
 
 displayRandomImgs();
@@ -112,7 +140,66 @@ function handleProductClick(event) {
         allProducts[i].timesShown +
         " times.";
       resultsList.appendChild(listItem);
-      console.log();
     }
+
+    drawResultsCharts();
+
+    productsSection.removeEventListener("click", handleProductClick);
   }
+}
+
+//charts
+
+function drawResultsCharts() {
+  var allClicks = [];
+  var views = [];
+
+  for (var i = 0; i < allProducts.length; i++) {
+    allClicks.push(allProducts[i].numberOfClicks);
+    views.push(allProducts[i].timesShown);
+  }
+
+  var ctx = document.getElementById("myChart").getContext("2d");
+  var myChart = new Chart(ctx, {
+    type: "bar",
+    data: {
+      labels: productsNames,
+      datasets: [
+        {
+          label: "Vote Results",
+          data: allClicks,
+
+          backgroundColor: "rgba(255, 99, 132, 0.2)",
+
+          borderColor: "rgba(255, 99, 132, 1)",
+
+          borderWidth: 1,
+        },
+
+        {
+          label: "Times Shown",
+          data: views,
+
+          backgroundColor: "rgba(54, 162, 235, 0.2)",
+
+          borderColor: "rgba(54, 162, 235, 1)",
+
+          borderWidth: 1,
+        },
+      ],
+    },
+    options: {
+      scales: {
+        yAxes: [
+          {
+            ticks: {
+              stepSize: 2,
+              precision: 0,
+              beginAtZero: true,
+            },
+          },
+        ],
+      },
+    },
+  });
 }

@@ -32,15 +32,21 @@ section {
   margin-top: 0;
   float: right;
 }
-a {
-  position: absolute;
-}
+
 .side-bar {
   float: left;
   display: block;
 }
+main ul {
+  height: 100px;
+  width: 200px;
+  margin-top: 0;
+}
 img {
   display: inline block;
   margin: 5px;
-  margin-top: 10px;
+}
+
+.chart {
+  display: block;
 }
