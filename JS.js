@@ -48,8 +48,9 @@ new ProductPicture("wine-glass", "img/wine-glass.jpg");
 console.log(allProducts);
 
 function displayRandomImgs() {
+  var forbiddenIndex = [];
   if (totalClicks > 0) {
-    var forbiddenIndex = [
+    forbiddenIndex = [
       previousLeftIndex,
       previousMiddleIndex,
       previousRightIndex,
@@ -61,6 +62,7 @@ function displayRandomImgs() {
 
   var middleIndex = generateRandomNumber(forbiddenIndex);
   forbiddenIndex.push(middleIndex);
+
   var rightIndex = generateRandomNumber(forbiddenIndex);
 
   previousLeftIndex = leftIndex;
@@ -81,13 +83,14 @@ function displayRandomImgs() {
 }
 
 function generateRandomNumber(forbiddenIndex) {
-  var allowed = true;
+  var allowed;
   var randomNumber;
 
   do {
     randomNumber = Math.floor(Math.random() * allProducts.length);
+    allowed = true;
     for (var i = 0; i < forbiddenIndex.length; i++) {
-      if (forbiddenIndex[i] == randomNumber) {
+      if (forbiddenIndex[i] === randomNumber) {
         allowed = false;
       }
     }
@@ -136,5 +139,7 @@ function handleProductClick(event) {
       resultsList.appendChild(listItem);
       console.log();
     }
+
+    productsSection.removeEventListener("click", handleProductClick);
   }
 }
