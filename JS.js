@@ -17,6 +17,10 @@ var middleImg = document.getElementById("middle_img");
 var rightImg = document.getElementById("right_img");
 
 var productsNames = [];
+var allClicks = [];
+// allClicks = JSON.parse(localStorage.getItem("storedClicks")) || 0; //used to be inside the function
+console.log(allClicks);
+var views = []; //used to be inside the function
 
 function ProductPicture(name, url) {
   this.name = name;
@@ -51,6 +55,8 @@ new ProductPicture("wine-glass", "img/wine-glass.jpg");
 console.log(allProducts);
 
 function displayRandomImgs() {
+  retrieve();
+
   var forbiddenIndex = [];
   if (totalClicks > 0) {
     forbiddenIndex = [
@@ -81,8 +87,31 @@ function displayRandomImgs() {
   rightImg.setAttribute("src", currentRightImg.url);
 
   allProducts[leftIndex].timesShown += 1;
+  // console.log((allProducts[leftIndex].timesShown += 1));
   allProducts[middleIndex].timesShown += 1;
   allProducts[rightIndex].timesShown += 1;
+
+  localStorage.setItem(
+    allProducts[leftIndex].name,
+    JSON.stringify([
+      allProducts[leftIndex].numberOfClicks,
+      allProducts[leftIndex].timesShown,
+    ])
+  );
+  localStorage.setItem(
+    allProducts[middleIndex].name,
+    JSON.stringify([
+      allProducts[middleIndex].numberOfClicks,
+      allProducts[middleIndex].timesShown,
+    ])
+  );
+  localStorage.setItem(
+    allProducts[rightIndex].name,
+    JSON.stringify([
+      allProducts[rightIndex].numberOfClicks,
+      allProducts[rightIndex].timesShown,
+    ])
+  );
 }
 
 function generateRandomNumber(forbiddenIndex) {
@@ -114,16 +143,39 @@ function handleProductClick(event) {
     if (clickedElementId === "left_img") {
       currentLeftImg.numberOfClicks += 1;
       totalClicks++;
+      localStorage.setItem(
+        currentLeftImg.name,
+        JSON.stringify([
+          currentLeftImg.numberOfClicks,
+          currentLeftImg.timesShown,
+        ])
+      );
       displayRandomImgs();
+
+      console.log(currentLeftImg);
     }
     if (clickedElementId === "middle_img") {
       currentMiddleImg.numberOfClicks += 1;
       totalClicks++;
+      localStorage.setItem(
+        currentMiddleImg.name,
+        JSON.stringify([
+          currentMiddleImg.numberOfClicks,
+          currentMiddleImg.timesShown,
+        ])
+      );
       displayRandomImgs();
     }
     if (clickedElementId === "right_img") {
       currentRightImg.numberOfClicks += 1;
       totalClicks++;
+      localStorage.setItem(
+        currentRightImg.name,
+        JSON.stringify([
+          currentRightImg.numberOfClicks,
+          currentRightImg.timesShown,
+        ])
+      );
       displayRandomImgs();
     }
     console.log(allProducts);
@@ -143,6 +195,8 @@ function handleProductClick(event) {
     }
 
     drawResultsCharts();
+    // console.log(allClicks);
+    // localStorage.setItem("storedClicks", JSON.stringify(allClicks));
 
     productsSection.removeEventListener("click", handleProductClick);
   }
@@ -151,9 +205,6 @@ function handleProductClick(event) {
 //charts
 
 function drawResultsCharts() {
-  var allClicks = [];
-  var views = [];
-
   for (var i = 0; i < allProducts.length; i++) {
     allClicks.push(allProducts[i].numberOfClicks);
     views.push(allProducts[i].timesShown);
@@ -203,3 +254,33 @@ function drawResultsCharts() {
     },
   });
 }
+
+function retrieve() {
+  for (var i = 0; i < localStorage.length; i++) {
+    var productKey = localStorage.key(i);
+    var productValue = localStorage.getItem(productKey);
+    console.log(productValue);
+
+    for (var j = 0; j < allProducts.length; j++) {
+      if (productKey == allProducts[i].name) {
+        allProducts[j].numberOfClicks += parseInt(productValue[0]);
+        allProducts[j].timesShown += parseInt(productValue[2]);
+        break;
+      }
+    }
+    // console.log(productValue[1]);
+  }
+}
+//storing data
+// localStorage.setItem("storedProducts", JSON.stringify(allProducts));
+
+// localStorage.setItem("storedviews", allProducts.timesShown);
+//retrieving data
+
+// var retrieveProducts = localStorage.getItem("storedProducts");
+
+// var retrieveViews = localStorage.getItem("storedViews");
+// // obj = JSON.parse(retrieveProducts)
+// console.log("retrieveProducts", JSON.parse(retrieveProducts));
+// console.log("retrieveClicks", JSON.parse(retrieveClicks));
+// console.log("retrieveViews", JSON.parse(retrieveViews));
